@@ -4,27 +4,7 @@ import threading
 class Covid:
     # funcao generica usada para validar variaveis do tipo char
 
-    genero = ''
-    resu_Teste = ''
-    tp_Teste = ''
-    vacina = ' ' 
-    idade = 0
-    op = 0
-    cont_R = 0
-    cont_PCR = 0
-    cont_Pos = 0
-    cont_NEG = 0
-    cont_NV = 0
-    idade_menor = 0
-    idade_maior = 0
-    indice = 0
-    estrogonof = 0 
-    nr_telemovel = 0 
-    RAP = 1000
-    PCR = 3500 
-    PER = 100 
-    vlr_pagar = 0
-    vlr_total = 0 
+   
     passou = True 
 
     def validarchar(self, A,  B,  a,  b):
@@ -162,6 +142,7 @@ class Covid:
         if op == 1:
             print("Introduza o nome do cliente")
             nome = input()
+            email = input("Introduza o email")
             print("Introduza o tipo de teste que deseja realizar (R-Rapido P-PCR)\n") 
             tp_Teste = self.validarchar('R', 'P', 'r', 'p') 
             print("Introduza a idade do paciente(>0)\n") 
@@ -184,7 +165,7 @@ class Covid:
 
             #vlr_total += vlr_pagar 
 
-            cliente = Cliente(nome=nome, genero=genero,nr_telemovel=nr_telemovel,result_Teste=result_Teste,tp_Teste=tp_Teste,vacina=vacina,vlr_pagar=vlr_pagar, idade=idade,)
+            cliente = Cliente(nome=nome,email= email, genero=genero,nr_telemovel=nr_telemovel,result_Teste=result_Teste,tp_Teste=tp_Teste,vacina=vacina,vlr_pagar=vlr_pagar, idade=idade,)
             cliente.visualizarDados()
             cliente.salvar()
 

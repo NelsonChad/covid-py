@@ -47,26 +47,16 @@ def messagesTreatment(client):
                 msg = "False"
             else:
                 print("RESPORTA: ",resp)
-                email = EmailServer(to_email=resp[4], subject="Resultados",body=resp) # send the email
+                email = EmailServer(to_email=resp[2], subject="Resultados ",body=resp) # send the email
                 email.sendMail()
 
                 #msg = f"DADOS: {name} {resp}"
                 msg = resp
 
-
             broadcast(msg, client)
         except:
             deleteClient(client)
             break
-    
-
-def broadcast2(msg, client):
-    for clientItem in clients:
-        if clientItem == client:
-            try:
-                clientItem.send(msg)
-            except:
-                deleteClient(clientItem)
 
 def broadcast(msg, client):
     try:

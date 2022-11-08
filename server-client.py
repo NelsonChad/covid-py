@@ -64,10 +64,10 @@ def mostrarDados(data):
         #print('MY LIST: ', cliente)
         print("***********************************************SEUS DADOS**********************************************")  #titulo da tabela
         print("_______________________________________________________________________________________________________") 
-        print("| ID | Nome Cliente | Genero | Nr de Telemovel | E-mail | Idade | Resultado | Tipo Teste | Vacina | Valor Pago |") 
+        print("| ID | Nome Cliente |  E-mail | Genero | Nr de Telemovel | E-mail | Idade | Resultado | Tipo Teste | Vacina | Valor Pago |") 
         print("_______________________________________________________________________________________________________")
         
-        print("| ",cliente[0]," | ",cliente[1]," | ", cliente[2]," | ",cliente[3]," | ",cliente[4] ," | ",cliente[5]," | ",cliente[6] ," | ",cliente[7] ," | ",cliente[8]," | ",cliente[9],"MT |")
+        print("| ",cliente[0]," | ",cliente[1]," | ", cliente[2]," | ",cliente[3]," | ",cliente[4] ," | ",cliente[5]," | ",cliente[6] ," | ",cliente[7] ," | ",cliente[8]," | ",cliente[9]," | ",cliente[10],"MT |")
             #print(cliente)
         print("_______________________________________________________________________________________________________") 
         print("\n") 
