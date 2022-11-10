@@ -1,11 +1,159 @@
 from cliente import Cliente
 import threading
+from conexao import DB
+
+class ClienteDAO:
+
+    def salvaCliente(self, nome, email, genero,  nr_telemovel, result_Teste, tp_Teste, vacina, vlr_pagar, idade):
+        connectDB = DB() # db object
+
+        connect = connectDB.conecta()
+        cursor = connect.cursor()
+
+        comando = f'INSERT INTO clientes(nome, email, genero, telefone, idade, result_teste, tipo_teste, tipo_vacina, valor_pagar) VALUES("{nome}","{email}","{genero}","{nr_telemovel}","{idade}","{result_Teste}","{tp_Teste}","{vacina}","{vlr_pagar}")'
+        cursor.execute(comando)
+        connect.commit() # Manda para o BD
+
+        connect.close()
+        cursor.close()
+
+    def consultarClientes(self):
+        connectDB = DB() # db object
+
+        connect = connectDB.conecta()
+        cursor = connect.cursor()
+        comando = 'SELECT * FROM clientes'
+        cursor.execute(comando)
+
+        resultado = cursor.fetchall() #LER DADOS
+        connect.close()
+        cursor.close()
+
+        return resultado
+
+class Cliente():
+
+    def __init__(self, nome, email, genero,  nr_telemovel, result_Teste, tp_Teste, vacina, vlr_pagar, idade):
+        self.nome = nome
+        self.email = email
+        self.genero = genero
+        self.nr_telemovel = nr_telemovel
+        self.result_Teste = result_Teste
+        self.tp_Teste = tp_Teste
+        self.vacina = vacina
+        self.vlr_pagar = vlr_pagar
+        self.idade = idade
+
+        # Meto que visualiza a tabela
+    def visualizarDados(self):
+        print("***********************************************DADOS DO CLIENTE***********************************************")  #titulo da tabela
+        print("______________________________________________________________________________________________________________") 
+        print("| Nome Cliente | E-mail | Genero | Nr de Telemovel | Idade | Resultado | Tipo Teste | Vacina | Valor a pagar |") 
+        print("______________________________________________________________________________________________________________")
+        print("%18s|%20s|%8s|%15s|%10s|%6s|%9s|%8s|%12.2f MT|" % (self.nome, self.email, self.genero, self.nr_telemovel, self.idade , self.result_Teste , self.tp_Teste , self.vacina , float(self.vlr_pagar)))  #to see
+        print("______________________________________________________________________________________________________________") 
+        print("\n") 
+
+    def salvar(self):
+        dao = ClienteDAO()
+        dao.salvaCliente(
+            self.nome,
+            self.email,
+            self.genero,
+            self.nr_telemovel,
+            self.result_Teste,
+            self.tp_Teste,
+            self.vacina,
+            self.vlr_pagar,
+            self.idade
+        )
+
+    def visualizarTodosDados():
+        dao = ClienteDAO()
+        
+        print("*****************************************************DADOS DOS CLIENTES*********************************************************")  #titulo da tabela
+        print("________________________________________________________________________________________________________________________________") 
+        print("| ID |   Nome Cliente   |       E-mail       | Genero | Nr de Telemovel | Idade | Resultado | Tipo Teste | Vacina | Valor Pago |") 
+        print("________________________________________________________________________________________________________________________________")
+        for cliente in dao.consultarClientes():
+            print("|%4d|%18s|%20s|%8s|%15s|%10d|%6s|%9s|%8s|%12.2f MT|" % (int(cliente[0]) ,cliente[1] , cliente[4] , cliente[2] , cliente[3] , cliente[5] , cliente[6] ,cliente[7] ,cliente[8] , float(cliente[9])))
+       
+        print("________________________________________________________________________________________________________________________________") 
+        print("\n") 
+
+
+    def visualizarTeste():
+        dao = ClienteDAO()
+
+        results = dao.consultarClientes()
+        totalTestes = 0
+        qtdRapidos = 0
+        qtdPCR = 0
+
+        #print("ERSULT: ", results)
+
+        totalTestes =len(results) # tamanho da lista
+        for resultados in results:
+            if(resultados[7] == 'R'):
+                qtdRapidos += 1
+            if(resultados[7] == 'P'):
+                qtdPCR += 1
+        print("************************************ESTATISTICAS**************************************")  # titulo da tabela
+        print("TOTAL DE TESTES: ", totalTestes)
+        print("A quantidade de testes Rapidos realizados foi: ", qtdRapidos)
+        print("A quantidade de testes PCR realizados foi: ", qtdPCR)
+        print("===================================FIM DA ESTATISTICAS================================\n")
+
+    # funcao que mostra a percentagem dos casos negativos e positivos
+    def visualizarPER():
+        dao = ClienteDAO()
+        results = dao.consultarClientes()
+        per_Pos =0.0
+        per_Neg = 0.0
+        positivos =0
+        negativos = 0
+
+        for resultados in results:
+            if(resultados[6] == 'P'):
+                positivos += 1
+            if(resultados[6] == 'N'):
+                negativos += 1
+ 
+        per_Pos = positivos * 100 / (positivos + negativos)
+        per_Neg = negativos * 100 / (positivos + negativos)
+
+        print("************************************ESTATISTICAS**************************************")  # titulo da tabela
+        print("A percentagem dos casos positivos e': ", per_Pos, "%")
+        print("A percentagem dos casos negativos e': ", per_Neg, "%")
+
+    # funcao que mostra a percentagem dos casos negativos e positivos
+    def visualizarTotal():
+        dao = ClienteDAO()
+        results = dao.consultarClientes()
+        vlr_total = 0.0
+
+        for resultados in results:
+            vlr_total += float(resultados[9])
+        
+        print("************************************ESTATISTICAS**************************************")  # titulo da tabela
+        print(f"O valor total recebido pela empresa e': {vlr_total} MTS ")
+
+    # funcao que visualiza a quantidade de pessoas que precisam de Vacina
+    def visualizarNaoVacinados()  :
+        dao = ClienteDAO()
+        results = dao.consultarClientes()
+        cont_NV = 0
+
+        for resultados in results:
+            if(resultados[8] == 'N'):
+                cont_NV += 1
+        print("A quantidade de pessoas que precisam de Vacina: ", cont_NV) 
 
 class Covid:
     # funcao generica usada para validar variaveis do tipo char
-
-   
     passou = True 
+    RAP = 1000
+    PCR = 3500
 
     def validarchar(self, A,  B,  a,  b):
         e = ''
@@ -37,7 +185,6 @@ class Covid:
                 return c
 
     # funcao que tem a funcao de validar a idade
-
     def validaridade(self):
         n = 0
         while True:
@@ -47,52 +194,14 @@ class Covid:
             else:
                 break
         return n
-
-    # funcao que armazenas os dados no ficheiro
-
-    def salvarDados(self, genero,  nr_telemovel,  resu_Teste,  tp_Teste,  vacina, vlr_pagar,  idade):
-        print("SALVAR ")
-
-    # funcao que mostra a percentagem dos casos negativos e positivos
-    def visualizarPER(self, a,  b,  c):
-
-        per_Pos, per_Neg
-        per_Pos = a * c / (a + b) 
-        per_Neg = b * c / (a + b) 
-        print("A percentagem dos casos positivos e': %d%% ", per_Pos) 
-        print("A percentagem dos casos negativos e': %d%% ", per_Neg) 
     
-
-    # funcao que visualiza a quantidade de testes realizado de cada tupo
-    def visualizarTeste(self, a,  b) :
-        print("TOTAL DE TESTES: %d \n", a+b) 
-        print("A quantidade de testes Rapidos realizados foi: %d ", a) 
-        print("A quantidade de testes PCR realizados foi: %d ", b) 
-    
-
-    # funcao que visualiza o valor total obitido
-    def visualizarTotal(self, vlr_total) :
-        # DecimalFormat mt = new DecimalFormat("###,###,###.00 MTS\n") 
-        print("O valor total recebido pela empresa e': %0.2f MTS \n", vlr_total) 
-    
-
-    # funcao que visualiza a quantidade de pessoas que precisam de Vacina
-    def visualizarNaoVacinados(self, cont_NV)  :
-        print("A quantidade de pessoas que precisam de Vacina: %d \n", cont_NV) 
     
 
     # funcao que visualiza a pessoa mais velha e mais nova contaminada
-    def visualizaPessoas(self, indice,  estrogonof) :
-        print(" a pessoa mais nova contamina tem %d anos \n", indice) 
-        print(" a pessoa mais velha contamina tem %d anos \n", estrogonof) 
-
-    # funcao que faz a leitura do ficheiro Dados.txt
-    def gerarEstatisticas(self, type) :
-        print("************************************ESTATISTICAS**************************************")  # titulo da tabela
-         
-        print("===================================FIM DA ESTATISTICAS================================\n") 
-    
-    
+    def visualizaPessoas(self, nova,  velha) :
+        print(f" a pessoa mais nova contamina tem {nova} anos.", ) 
+        print(f" a pessoa mais velha contamina tem {velha} anos.", ) 
+        
 
     # funcao que acha a maior idade
     def achar_Maior(self, indice,  idade,  cont_Pos) :
@@ -139,10 +248,10 @@ class Covid:
                 break
 
     def switch_cliente(self, op):
+        vlr_pagar = 0
         if op == 1:
-            print("Introduza o nome do cliente")
-            nome = input()
-            email = input("Introduza o email")
+            nome = input("Introduza o nome do cliente: ")
+            email = input("Introduza o email: ")
             print("Introduza o tipo de teste que deseja realizar (R-Rapido P-PCR)\n") 
             tp_Teste = self.validarchar('R', 'P', 'r', 'p') 
             print("Introduza a idade do paciente(>0)\n") 
@@ -156,44 +265,32 @@ class Covid:
             print("informe o estado de vacinacao do paciente (S-sim ou N-nao)\n") 
             vacina = self.validarchar('S', 'N', 's', 'n') 
 
-            if tp_Teste == 'R':
-                vlr_pagar = self.RAP 
-                self.cont_R += 1 
-            elif tp_Teste == 'P':
+            if tp_Teste.upper() == 'R':
+                vlr_pagar = self.RAP
+            elif tp_Teste.upper() == 'P':
                 vlr_pagar = self.PCR 
-                self.cont_PCR += 1 
 
-            #vlr_total += vlr_pagar 
-
-            cliente = Cliente(nome=nome,email= email, genero=genero,nr_telemovel=nr_telemovel,result_Teste=result_Teste,tp_Teste=tp_Teste,vacina=vacina,vlr_pagar=vlr_pagar, idade=idade,)
+            cliente = Cliente(nome=nome,email= email, genero=genero.upper(),nr_telemovel=nr_telemovel,result_Teste=result_Teste.upper(),tp_Teste=tp_Teste.upper(),vacina=vacina.upper(),vlr_pagar=vlr_pagar, idade=idade,)
             cliente.visualizarDados()
             cliente.salvar()
-
-            self.switch_resu_Teste (result_Teste)
-            self.switch_vacina(vacina)
-
-            passou = False  
 
         elif op == 2:
             Cliente.visualizarTodosDados()
              
         elif op ==  3:
-            self.gerarEstatisticas('t')  #ver estatistica do tipo testes feitos (f)
+            Cliente.visualizarTeste()
              
         elif op ==  4:
-            self.gerarEstatisticas('p')  #ver estatistica do tipo percentagem feitos (p)
+            Cliente.visualizarPER()  #ver estatistica do tipo percentagem feitos (p)
              
         elif op ==  5:
-            self.gerarEstatisticas('e')  #ver valor arrecadado (o)
+            Cliente.visualizarTotal()  #ver valor arrecadado (o)
              
         elif op ==  6:
-            if (passou == True):
-                print("porfavor execute a primeira opcao\n") 
-            else:
-                self.visualizarNaoVacinados(self.cont_NV) 
+            Cliente.visualizarNaoVacinados() 
              
         elif op ==  7:
-            if (passou == True):
+            if (True):
                 print("porfavor execute a primeira opcao\n") 
             else:
                 self.visualizaPessoas(self.indice, self.estrogonof) 
@@ -202,38 +299,14 @@ class Covid:
             self.visualizaDados() 
 
         elif op ==  9:
-            print(" Ate a proxima :)\n") 
+            print(" Ate a proxima :)") 
+            exit(0)
 
-
-    def switch_resu_Teste (self, resu_Teste) :
-        if resu_Teste ==  'P':
-            self.cont_Pos += 1
-            if (self.cont_Pos == 1):
-                indice = self.idade 
-
-            idade_maior = self.achar_Maior(indice, self.idade, self.cont_Pos) 
-            idade_menor = self.achar_Menor(indice, self.idade, self.cont_Pos)  
-
-        elif resu_Teste ==  'N':
-            self.cont_NEG += 1
-
-    def switch_vacina (self, vacina) :
-        if vacina ==  'S':
-            #here
-            self.salvarDados(self.genero, self.nr_telemovel,self.resu_Teste, self.tp_Teste, vacina, self.vlr_pagar, self.idade) 
-                
-        elif vacina ==  'N':
-            self.cont_NV += 1
 
     def main(self):
         print("|=============SISTEMA DE GESTAO COVID==============|\n") 
-
-        '''  server = SocketServer() #object Server
-        serverThread = threading.Thread(target=server.start(), args=[]) #add a sever Thread
-        serverThread.daemon = True #as daemon
-        serverThread.start() #start sever Thread'''
-        
         self.menu()
+
 if __name__ == '__main__':
     c = Covid()
     c.main()

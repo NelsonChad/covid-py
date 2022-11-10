@@ -1,8 +1,24 @@
 import threading
 import socket
 
-from dao.serverDao import ServerDAO
 from email_server import EmailServer
+from conexao import DB
+
+class ServerDAO:
+    def consultarDados(self, nome):
+        print('NA CONSULTA: ', nome)
+        connectDB = DB() # db object
+
+        connect = connectDB.conecta()
+        cursor = connect.cursor()
+        comando = f'SELECT * FROM clientes Where nome = "{nome}"'
+        cursor.execute(comando)
+
+        resultado = cursor.fetchall() #LER DADOS
+        connect.close()
+        cursor.close()
+
+        return resultado
 
 clients = []
 
@@ -24,15 +40,6 @@ def main():
         thread = threading.Thread(target=messagesTreatment, args=[client])
         thread.start()
 
-'''def messagesTreatment(client):
-    while True:
-        try:
-            msg = client.recv(2048)
-            broadcast(msg, client)
-        except:
-            deleteClient(client)
-            break'''
-
 def messagesTreatment(client):
     serverDAO = ServerDAO()
     while True:
@@ -46,17 +53,27 @@ def messagesTreatment(client):
                 print("DADOS DO UTILIZADOR NAO ENCONTRADOS")
                 msg = "False"
             else:
-                print("RESPORTA: ",resp)
-                email = EmailServer(to_email=resp[2], subject="Resultados ",body=resp) # send the email
-                email.sendMail()
+                print("RESPOST : ",resp)
 
-                #msg = f"DADOS: {name} {resp}"
+                #send data
                 msg = resp
+                broadcast(msg, client)
+                #sendEmail(to_email=resp[4], subject="RESULTADOS",body=resp, client=client) #send Email
 
-            broadcast(msg, client)
         except:
             deleteClient(client)
             break
+        
+def sendEmail(to_email,subject, body, client):
+    message = f" Acaro Cliente {body[2]}, o teu resultado e': {body[7]}"
+    try:
+        print(message)
+        client.send(str(message).encode())
+
+        email = EmailServer(to_email=to_email, subject=subject,body=message) # send the email
+        email.sendMail()
+    except:
+        deleteClient(client)
 
 def broadcast(msg, client):
     try:

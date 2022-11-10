@@ -38,7 +38,6 @@ def receiveMessages(client):
                 #show data in table
                 threadTable = threading.Thread(target=mostrarDados, args=[data])
                 threadTable.start()
-      
         except:
             print('Nao foi permanecer conectado ao server!\n')
             print('pressione Enter para continuar...')
@@ -60,16 +59,16 @@ def pedirDados(client, username):
             return
 
 def mostrarDados(data):
+        print("DATA: ", data)
         cliente = ast.literal_eval(data)[0]
         #print('MY LIST: ', cliente)
-        print("***********************************************SEUS DADOS**********************************************")  #titulo da tabela
-        print("_______________________________________________________________________________________________________") 
+        print("***********************************************************SEUS DADOS*****************************************************")  #titulo da tabela
+        print("__________________________________________________________________________________________________________________________") 
         print("| ID | Nome Cliente |  E-mail | Genero | Nr de Telemovel | E-mail | Idade | Resultado | Tipo Teste | Vacina | Valor Pago |") 
-        print("_______________________________________________________________________________________________________")
-        
-        print("| ",cliente[0]," | ",cliente[1]," | ", cliente[2]," | ",cliente[3]," | ",cliente[4] ," | ",cliente[5]," | ",cliente[6] ," | ",cliente[7] ," | ",cliente[8]," | ",cliente[9]," | ",cliente[10],"MT |")
+        print("__________________________________________________________________________________________________________________________")
+        print("|%4d|%18s|%20s|%8s|%15s|%10d|%6s|%9s|%8s|%12.2f MT|" % (int(cliente[0]) ,cliente[1] , cliente[4] , cliente[2] , cliente[3] , cliente[5] , cliente[6] ,cliente[7] ,cliente[8] , float(cliente[9])))
             #print(cliente)
-        print("_______________________________________________________________________________________________________") 
+        print("__________________________________________________________________________________________________________________________") 
         print("\n") 
     
         menu()
