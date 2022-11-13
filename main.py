@@ -1,4 +1,3 @@
-from cliente import Cliente
 import threading
 from conexao import DB
 

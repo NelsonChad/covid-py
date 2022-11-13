@@ -58,17 +58,19 @@ def messagesTreatment(client):
                 #send data
                 msg = resp
                 broadcast(msg, client)
-                #sendEmail(to_email=resp[4], subject="RESULTADOS",body=resp, client=client) #send Email
+                sendEmail(to_email=resp[0][4], subject="RESULTADOS",body=resp, client=client) #send Email
+
 
         except:
             deleteClient(client)
             break
         
 def sendEmail(to_email,subject, body, client):
-    message = f" Acaro Cliente {body[2]}, o teu resultado e': {body[7]}"
+    message = f" Acaro Cliente {body[0][1]}, o teu resultado e': {body[0][8]}"
+
     try:
         print(message)
-        client.send(str(message).encode())
+        #client.send(str(message).encode())
 
         email = EmailServer(to_email=to_email, subject=subject,body=message) # send the email
         email.sendMail()
